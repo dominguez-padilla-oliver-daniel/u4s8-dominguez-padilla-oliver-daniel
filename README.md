@@ -1,12 +1,19 @@
-# U4S7 — Pulido funcional y UX
-Dominguez Padilla Oliver Daniel · Matrícula 25311067 · Grupo TIDSM 4-1
+# U4S8 — Dominguez Padilla Oliver Daniel
+Matrícula 25311067 · Grupo TIDSM 4-1 · Versión final del curso (Release v1.0)
 
 | Recurso | Enlace |
 |---------|--------|
-| Producción | https://u4s7-dominguez-padilla-oliver-daniel.onrender.com |
-| Repositorio | https://github.com/dominguez-padilla-oliver-daniel/u4s7-dominguez-padilla-oliver-daniel |
+| Demo en vivo (producción) | https://u4s8-dominguez-padilla-oliver-daniel.onrender.com |
+| Repositorio | https://github.com/dominguez-padilla-oliver-daniel/u4s8-dominguez-padilla-oliver-daniel |
+| Release | https://github.com/dominguez-padilla-oliver-daniel/u4s8-dominguez-padilla-oliver-daniel/releases/tag/v1.0 |
 
-## Stack
+## Qué hace este proyecto
+
+Vitrina de servicios multiusuario. Cada persona se registra, inicia sesión y administra su propio catálogo de servicios (título y precio) mediante un CRUD completo: crear, listar, editar y eliminar.
+
+El listado incluye búsqueda por título y paginación, y está pensado para usarse cómodamente desde el celular. Cada usuario solo ve y modifica sus propios registros. El sistema está publicado con HTTPS y datos reales sobre MySQL gestionado.
+
+## Stack técnico
 
 | Capa | Tecnología |
 |------|-----------|
@@ -26,7 +33,17 @@ Dominguez Padilla Oliver Daniel · Matrícula 25311067 · Grupo TIDSM 4-1
 - **Búsqueda por título** (`?q=`), insensible a mayúsculas.
 - **Estados vacíos** diferenciados: sin registros y sin coincidencias de búsqueda.
 
-## Semana 7: decisiones técnicas
+## Cómo se prueba el aislamiento por usuario
+
+1. Registrar dos cuentas distintas: **A** y **B**.
+2. Con la cuenta A, crear uno o más servicios.
+3. Cerrar sesión e iniciar con la cuenta B: el listado de B **no** muestra los servicios de A (aparece el estado vacío).
+4. Estando como B, intentar abrir directamente la URL de edición o eliminación de un servicio de A (usando su id): el sistema no permite el acceso.
+5. Sin sesión, entrar a `/servicios/` redirige al login.
+
+El aislamiento se aplica en el servidor: toda consulta del listado y toda búsqueda de un registro individual se filtran por `propietario = usuario autenticado`.
+
+## Decisiones técnicas (Semana 7)
 
 ### Listado con búsqueda y paginación (`core/views.py`)
 
@@ -47,7 +64,7 @@ Se revisó la aplicación con la checklist del curso (6 puntos) sobre todas las 
 
 | # | Criterio | Resultado |
 |---|----------|-----------|
-| 1 | `aria-label` en controles solo-ícono | Sin hallazgos: todos los botones y enlaces tienen texto visible; el campo de búsqueda ya cuenta con `aria-label` |
+| 1 | `aria-label` en controles solo-ícono | Sin hallazgos |
 | 2 | Contraste de color | Hallazgo corregido |
 | 3 | Navegación completa con teclado | Verificada |
 | 4 | Responsividad a ~375 px | Hallazgo corregido |
@@ -74,6 +91,8 @@ gunicorn miproyecto.wsgi
 
 Variables de entorno requeridas (sus valores no se versionan): `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`, `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`.
 
+En producción: `DEBUG=False`, `SECRET_KEY` distinta a la local, `ALLOWED_HOSTS` sin esquema y `CSRF_TRUSTED_ORIGINS` con `https://`.
+
 ## Ejecución local
 
 ```bash
@@ -97,3 +116,10 @@ core/
     ├── servicios.html # Listado con buscador, tabla y paginación
     └── ...            # servicio_form, servicio_confirm_delete, login, registro
 ```
+
+## Historial de unidades
+
+- **Unidad 1:** portafolio estático con HTML5 + Tailwind
+- **Unidad 2:** modelo Servicio migrado a MySQL, deploy dinámico en Render
+- **Unidad 3:** CRUD completo con ModelForms + autenticación y sesiones
+- **Unidad 4:** paginación, búsqueda, UI review y defensa final (Release v1.0)
